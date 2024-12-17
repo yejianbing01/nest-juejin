@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { PersonController } from './person.controller';
+// import { BookModule } from 'src/book/book.module';
 
 @Module({
+  // imports: [BookModule],
+  imports: [],
   controllers: [PersonController],
   providers: [
     // 1. useClass简写

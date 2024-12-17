@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
+import { BookService } from 'src/book/book.service';
 
 @Injectable()
 export class PersonService {
+  // 注入其他模块的service，也可以导入全局模块
+  constructor(private bookService: BookService) {}
+
   create(createPersonDto: CreatePersonDto) {
     return '接收到body参数' + JSON.stringify(createPersonDto);
   }
 
-  async findAll() {
-    return `This action returns all person`;
+  findAll() {
+    return `This action returns all person` + this.bookService.findAll();
   }
 
   findByQuery({ name, age }) {
