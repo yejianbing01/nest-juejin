@@ -4,8 +4,9 @@ import { AppService } from './app.service';
 import { PersonModule } from './person/person.module';
 import { BookModule } from './book/book.module';
 import { LogMiddleware } from './log.middleware';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { LoginGuard } from './login.guard';
+import { TimeInterceptor } from './time.interceptor';
 
 @Module({
   imports: [PersonModule, BookModule],
@@ -16,6 +17,10 @@ import { LoginGuard } from './login.guard';
     {
       provide: APP_GUARD,
       useClass: LoginGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TimeInterceptor,
     },
   ],
 })
