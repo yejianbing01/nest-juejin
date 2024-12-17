@@ -8,7 +8,7 @@ export class PersonService {
     return '接收到body参数' + JSON.stringify(createPersonDto);
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all person`;
   }
 

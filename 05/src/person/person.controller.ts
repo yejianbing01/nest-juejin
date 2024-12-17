@@ -9,6 +9,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFiles,
+  Inject,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -18,6 +19,15 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 @Controller('person')
 export class PersonController {
   constructor(private readonly personService: PersonService) {}
+
+  // 1. 注入useClass的provider
+  @Inject('person_service')
+  private readonly personService2: PersonService;
+  // 2. 注入useValue的provider
+  @Inject('person')
+  private readonly person: { name: string; age: number };
+  @Inject('person_factory')
+  private readonly personFromUseFactory: { name: string; age: number };
 
   @Post()
   create(@Body() createPersonDto: CreatePersonDto) {
@@ -41,12 +51,15 @@ export class PersonController {
 
   @Get()
   findAll() {
+    console.log(this.person);
+    console.log(this.personFromUseFactory);
     return this.personService.findAll();
   }
 
   @Get('find')
   find(@Query('name') name: string, @Query('age') age: number) {
-    return this.personService.findByQuery({ name, age });
+    // return this.personService.findByQuery({ name, age });
+    return this.personService2.findByQuery({ name, age });
   }
 
   @Get(':id')
