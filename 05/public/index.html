@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/qs@6.10.2/dist/qs.js"></script>
+</head>
+
+<body>
+    <h1 id="title">hello nest</h1>
+    <input id="fileInput" type="file" multiple>
+    <script>
+        // 1. urlParam
+        // async function urlParam({ id }) {
+        //     const res = await axios.get(`http://localhost:3000/person/${id}`)
+        //     console.log(res)
+        //     document.querySelector("#title").innerHTML = res.data
+        // }
+        // urlParam({ id: 123 })
+
+        // 2. queryParam
+        // async function queryParam({ name, age }) {
+        //     const res = await axios.get(`http://localhost:3000/person/find`, {
+        //         params: {
+        //             name,
+        //             age
+        //         }
+        //     })
+        //     console.log(res)
+        //     document.querySelector("#title").innerHTML = res.data
+        // }
+        // queryParam({ name: '王', age: 18 })
+
+        // 3. formData
+        // async function urlEncoded({ name, age }) {
+        //     const res = await axios.post(`http://localhost:3000/person`, Qs.stringify({ name, age }), {
+        //         headers: { 'content-type': 'application/x-www-form-urlencoded' }
+        //     })
+        //     console.log(res)
+        //     document.querySelector("#title").innerHTML = res.data
+        // }
+        // urlEncoded({ name: '王', age: 18 })
+
+        // 4. json
+        // async function json({ name, age }) {
+        //     const res = await axios.post(`http://localhost:3000/person`, { name, age }) // { headers: { 'content-type': 'application/json' } }
+
+        //     console.log(res)
+        //     document.querySelector("#title").innerHTML = res.data
+        // }
+        // json({ name: '王', age: 18 })
+
+        // 5. formData
+        const fileInput = document.querySelector('#fileInput');
+
+        async function formData({ name, age }) {
+            const data = new FormData();
+            data.set('name', name)
+            data.set('age', age)
+            data.set('file1', fileInput.files[0])
+            data.set('file2', fileInput.files[1])
+
+            const res = axios.post('http://localhost:3000/person/file', data, { headers: { 'content-type': 'multipart/form-data' } })
+            document.querySelector("#title").innerHTML = res.data
+        }
+
+        fileInput.onchange = () => formData({ name: '王', age: 18 })
+    </script>
+</body>
+
+
+</html>
