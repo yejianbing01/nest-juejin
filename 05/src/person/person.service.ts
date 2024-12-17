@@ -21,7 +21,7 @@ export class PersonService {
   }
 
   update(id: number, updatePersonDto: UpdatePersonDto) {
-    return `This action updates a #${id} person`;
+    return '接收到body参数' + id + JSON.stringify(updatePersonDto);
   }
 
   remove(id: number) {
