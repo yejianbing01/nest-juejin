@@ -41,5 +41,6 @@ import { PersonController } from './person.controller';
       useExisting: 'person',
     },
   ],
+  exports: [PersonService],
 })
 export class PersonModule {}
