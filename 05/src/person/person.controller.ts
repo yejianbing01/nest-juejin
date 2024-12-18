@@ -11,11 +11,15 @@ import {
   UploadedFiles,
   Inject,
   ValidationPipe,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { storage } from 'src/component/storage';
 
 @Controller('person')
 export class PersonController {
@@ -38,15 +42,23 @@ export class PersonController {
   @Post('file')
   @UseInterceptors(
     AnyFilesInterceptor({
-      dest: 'uploads/',
+      storage: storage,
     }),
   )
   file(
     @Body() createPersonDto: CreatePersonDto,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 20 }),
+          new FileTypeValidator({ fileType: 'image/jpeg' }),
+        ],
+      }),
+    )
+    file: Array<Express.Multer.File>,
   ) {
     console.log(createPersonDto);
-    console.log(files);
+    console.log(file);
     return '接收到文件';
   }
 

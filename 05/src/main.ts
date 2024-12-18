@@ -6,7 +6,9 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 // import { NextFunction, Response, Request } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
 
   app.useStaticAssets('public', { prefix: '/static' });
   // 全局中间件和express的中间件一样
