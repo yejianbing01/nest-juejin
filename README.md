@@ -74,3 +74,10 @@ ArgumentHost 可以通过 getArgs 或者 getArgByIndex 拿到上下文参数，�
 更推荐的方式是根据 getType 的结果分别 switchToHttp、switchToWs、swtichToRpc，然后再取对应的 argument。
 
 而 ExecutionContext 还提供 getClass、getHandler 方法，可以结合 reflector 来取出其中的 metadata。
+
+1. forwardRef 解决循环依赖问题
+Module 之间可以相互 imports，Provider 之间可以相互注入，这两者都会形成循环依赖。
+
+解决方式就是两边都用 forwardRef 来包裹下。
+
+它的原理就是 nest 会先创建 Module、Provider，之后再把引用转发到对方，也就是 forward ref。
