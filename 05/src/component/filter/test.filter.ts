@@ -11,9 +11,12 @@ export class TestFilter implements ExceptionFilter {
   catch(exception: BadRequestException, host: ArgumentsHost) {
     const response: Response = host.switchToHttp().getResponse();
 
-    response.status(400).json({
-      statusCode: 400,
-      message: 'test: ' + exception.message,
+    const statusCode = exception.getStatus();
+    const res = exception.getResponse() as { message: string[] };
+
+    response.status(statusCode).json({
+      code: statusCode,
+      message: res.message?.join ? res.message.join(',') : exception.message,
     });
   }
 }

@@ -4,10 +4,11 @@ import { AppService } from './app.service';
 import { PersonModule } from './person/person.module';
 import { BookModule } from './book/book.module';
 import { LogMiddleware } from './component/middleware/log.middleware';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { LoginGuard } from './component/guard/login.guard';
 import { TimeInterceptor } from './component/interceptor/time.interceptor';
 import { ConfcModuleFromDefinition } from './confc/confc.module';
+import { TestFilter } from './component/filter/test.filter';
 
 @Module({
   imports: [
@@ -29,6 +30,10 @@ import { ConfcModuleFromDefinition } from './confc/confc.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: TestFilter,
     },
   ],
 })
