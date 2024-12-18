@@ -1,5 +1,6 @@
 import {
   BeforeApplicationShutdown,
+  forwardRef,
   Global,
   Module,
   OnApplicationBootstrap,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { BookController } from './book.controller';
+import { PersonModule } from 'src/person/person.module';
 
 @Global() // 声明为全局模块
 @Module({
@@ -16,6 +18,7 @@ import { BookController } from './book.controller';
   providers: [BookService],
   // 导出该模块，可供其他模块注入
   exports: [BookService],
+  imports: [forwardRef(() => PersonModule)],
 })
 export class BookModule
   implements

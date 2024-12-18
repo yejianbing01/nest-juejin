@@ -1,11 +1,10 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { PersonController } from './person.controller';
-// import { BookModule } from 'src/book/book.module';
+import { BookModule } from 'src/book/book.module';
 
 @Module({
-  // imports: [BookModule],
-  imports: [],
+  imports: [forwardRef(() => BookModule)],
   controllers: [PersonController],
   providers: [
     // 1. useClass简写
