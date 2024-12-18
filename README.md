@@ -81,3 +81,39 @@ Module 之间可以相互 imports，Provider 之间可以相互注入，这两�
 解决方式就是两边都用 forwardRef 来包裹下。
 
 它的原理就是 nest 会先创建 Module、Provider，之后再把引用转发到对方，也就是 forward ref。
+
+1. Dynamic Module 动态模块(可配置模块)
+
+- 创建方法1：手写 register 静态方法
+```ts
+import { DynamicModule, Module } from '@nestjs/common';
+import { BbbService } from './bbb.service';
+import { BbbController } from './bbb.controller';
+
+@Module({})
+export class BbbModule {
+  static register(options: Record<string, any>): DynamicModule {
+    return {
+      module: BbbModule,
+      controllers: [BbbController],
+      providers: [
+        {
+          provide: 'CONFIG_OPTIONS',
+          useValue: options,
+        },
+        BbbService,
+      ],
+      exports: []
+    };
+  }
+}
+```
+我们约定它们分别用来做不同的事情：
+
+register：用一次模块传一次配置，比如这次调用是 BbbModule.register({aaa:1})，下一次就是 BbbModule.register({aaa:2}) 了
+
+forRoot：配置一次模块用多次，比如 XxxModule.forRoot({}) 一次，之后就一直用这个 Module，一般在 AppModule 里 import
+
+forFeature：用了 forRoot 固定了整体模块，用于局部的时候，可能需要再传一些配置，比如用 forRoot 指定了数据库链接信息，再用 forFeature 指定某个模块访问哪个数据库和表。
+
+- 创建方法二：使用ConfigurableModuleBuilder

@@ -7,9 +7,17 @@ import { LogMiddleware } from './component/middleware/log.middleware';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { LoginGuard } from './component/guard/login.guard';
 import { TimeInterceptor } from './component/interceptor/time.interceptor';
+import { ConfcModuleFromDefinition } from './confc/confc.module';
 
 @Module({
-  imports: [PersonModule, BookModule],
+  imports: [
+    PersonModule,
+    BookModule,
+    // ConfcModule.register({ userName: 'confc' }),
+    ConfcModuleFromDefinition.register({
+      userName: 'ConfcModuleFromDefinition',
+    }),
+  ],
   controllers: [AppController],
   providers: [
     AppService,
