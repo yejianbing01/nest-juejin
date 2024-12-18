@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Inject,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -30,7 +31,7 @@ export class PersonController {
   private readonly personFromUseFactory: { name: string; age: number };
 
   @Post()
-  create(@Body() createPersonDto: CreatePersonDto) {
+  create(@Body(ValidationPipe) createPersonDto: CreatePersonDto) {
     return this.personService.create(createPersonDto);
   }
 

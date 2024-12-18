@@ -22,17 +22,17 @@
         // urlParam({ id: 123 })
 
         // 2. queryParam
-        async function queryParam({ name, age }) {
-            const res = await axios.get(`http://localhost:3000/person/find`, {
-                params: {
-                    name,
-                    age
-                }
-            })
-            console.log(res)
-            document.querySelector("#title").innerHTML = res.data
-        }
-        queryParam({ name: '王', age: 18 })
+        // async function queryParam({ name, age }) {
+        //     const res = await axios.get(`http://localhost:3000/person/find`, {
+        //         params: {
+        //             name,
+        //             age
+        //         }
+        //     })
+        //     console.log(res)
+        //     document.querySelector("#title").innerHTML = res.data
+        // }
+        // queryParam({ name: '王', age: '18' })
 
         // 3. formData
         // async function urlEncoded({ name, age }) {
@@ -45,13 +45,13 @@
         // urlEncoded({ name: '王', age: 18 })
 
         // 4. json
-        // async function json({ name, age }) {
-        //     const res = await axios.post(`http://localhost:3000/person`, { name, age }) // { headers: { 'content-type': 'application/json' } }
+        async function json({ name, age }) {
+            const res = await axios.post(`http://localhost:3000/person`, { name, age }) // { headers: { 'content-type': 'application/json' } }
 
-        //     console.log(res)
-        //     document.querySelector("#title").innerHTML = res.data
-        // }
-        // json({ name: '王', age: 18 })
+            console.log(res)
+            document.querySelector("#title").innerHTML = res.data
+        }
+        json({ name: '王', age: '18' })
 
         // 5. formData
         // const fileInput = document.querySelector('#fileInput');

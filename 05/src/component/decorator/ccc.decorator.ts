@@ -1,6 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
-import { IncomingHttpHeaders } from 'http';
 
 export const Ccc = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {

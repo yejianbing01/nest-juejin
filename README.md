@@ -5,7 +5,13 @@
 ![AOP](./img/aop.jpg)
 
 1. middleware  和 interceptor 的区别的
-主要在于参数的不同。 interceptor 可以拿到调用的 controller 和 handler
+主要在于参数的不同。 interceptor 可以拿到调用的 controller 和 handler， interceptor 里是可以用 rxjs 的操作符来组织响应处理流程
+nest 的 interceptor 就用了 rxjs 来处理响应，但常用的 operator 也就这么几个：
+
+tap: 不修改响应数据，执行一些额外逻辑，比如记录日志、更新缓存等
+map：对响应数据做修改，一般都是改成 {code, data, message} 的格式
+catchError：在 exception filter 之前处理抛出的异常，可以记录或者抛出别的异常
+timeout：处理响应超时的情况，抛出一个 TimeoutError，配合 catchErrror 可以返回超时的响应
 
 1. Nest 内置了一些 Pipe：
 ValidationPipe
