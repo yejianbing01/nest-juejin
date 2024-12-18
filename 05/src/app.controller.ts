@@ -7,10 +7,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { LoginGuard } from './login.guard';
-import { TimeInterceptor } from './time.interceptor';
-import { ValidatePipe } from './validate.pipe';
-import { TestFilter } from './test.filter';
+import { LoginGuard } from './component/guard/login.guard';
+import { TimeInterceptor } from './component/interceptor/time.interceptor';
+import { ValidatePipe } from './component/pipe/validate.pipe';
+import { TestFilter } from './component/filter/test.filter';
+import { Aaa } from './component/decorator/aaa.decorator';
+import { AaaGuard } from './component/guard/aaa.guard';
+import { Ccc, MyHeaders } from './component/decorator/ccc.decorator';
 
 @UseGuards(LoginGuard) // 开启守卫
 @UseInterceptors(TimeInterceptor) // 开启拦截器
@@ -21,7 +24,11 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
+  @UseGuards(AaaGuard)
+  @Aaa('admin')
+  getHello(@Ccc() c: string, @MyHeaders('Accept') headers: string): string {
+    console.log(c);
+    console.log('headers', headers);
     return this.appService.getHello();
   }
 
