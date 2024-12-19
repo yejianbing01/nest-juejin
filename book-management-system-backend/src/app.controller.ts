@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { BadRequestException, Controller, Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
@@ -25,9 +18,7 @@ export class AppController {
     FileInterceptor('file', {
       dest: 'uploads',
       storage: storage,
-      limits: {
-        fieldSize: 1024 * 1024 * 5,
-      },
+      limits: { fieldSize: 1024 * 1024 * 5 },
       fileFilter: (req, file, cb) => {
         const extname = path.extname(file.originalname);
         if (['.png', '.jpg', '.jpeg'].includes(extname)) {

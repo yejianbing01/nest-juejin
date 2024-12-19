@@ -12,9 +12,7 @@ export class UserService {
   async register(registerUserDto: RegisterUserDto) {
     const users: User[] = await this.dbService.read();
 
-    const existsName = users.some(
-      (user) => user.username === registerUserDto.username,
-    );
+    const existsName = users.some((user) => user.username === registerUserDto.username);
     if (existsName) {
       throw new BadRequestException('用户名已存在');
     }
@@ -32,9 +30,7 @@ export class UserService {
   async login(loginUserDto: LoginUserDto) {
     const users: User[] = await this.dbService.read();
 
-    const foundUser = users.find(
-      (user) => user.username === loginUserDto.username,
-    );
+    const foundUser = users.find((user) => user.username === loginUserDto.username);
 
     if (!foundUser) {
       throw new BadRequestException('用户不存在');
