@@ -16,7 +16,6 @@ import { TestFilter } from './component/filter/test.filter';
 // import { AaaGuard } from './component/guard/aaa.guard';
 import { Ccc, MyHeaders } from './component/decorator/ccc.decorator';
 import { WINSTON_LOGGER_TOKEN } from './winston/winston.module';
-import winston from 'winston';
 import { MyLogger } from './winston/MyLogger';
 
 @UseGuards(LoginGuard) // 开启守卫

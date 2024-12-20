@@ -123,3 +123,40 @@ forRoot：配置一次模块用多次，比如 XxxModule.forRoot({}) 一次，�
 forFeature：用了 forRoot 固定了整体模块，用于局部的时候，可能需要再传一些配置，比如用 forRoot 指定了数据库链接信息，再用 forFeature 指定某个模块访问哪个数据库和表。
 
 - 创建方法二：使用ConfigurableModuleBuilder
+
+1. 制作Dockerfile构建镜像
+```DockerFile
+FROM node:20-alpine as build-stage
+
+WORKDIR /app
+
+COPY package.json .
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+# production stage
+FROM node:20-alpine as production-stage
+
+COPY --from=build-stage /app/dist /app
+COPY --from=build-stage /app/package.json /app/package.json
+
+WORKDIR /app
+
+RUN npm config set registry https://registry.npmmirror.com/
+
+RUN npm install --production
+
+EXPOSE 3000
+
+CMD ["node", "/app/main.js"]
+
+```
+```sh
+docker build -t book:0.1.0 .
+```
