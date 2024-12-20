@@ -12,6 +12,8 @@ import { TestFilter } from './component/filter/test.filter';
 import { WinstonModule } from './winston/winston.module';
 import * as chalk from 'chalk';
 import { transports, format } from 'winston';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Person } from './person/entities/person.entity';
 
 @Module({
   imports: [
@@ -41,6 +43,22 @@ import { transports, format } from 'winston';
           dirname: 'log',
         }),
       ],
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'root',
+      database: 'typeorm_test',
+      synchronize: true,
+      logging: true,
+      entities: [Person],
+      poolSize: 10,
+      connectorPackage: 'mysql2',
+      extra: {
+        authPlugin: 'sha256_password',
+      },
     }),
   ],
   controllers: [AppController],

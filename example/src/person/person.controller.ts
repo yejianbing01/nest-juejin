@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   UseInterceptors,
   UploadedFiles,
   Inject,
@@ -34,11 +33,6 @@ export class PersonController {
   @Inject('person_factory')
   private readonly personFromUseFactory: { name: string; age: number };
 
-  @Post()
-  create(@Body(ValidationPipe) createPersonDto: CreatePersonDto) {
-    return this.personService.create(createPersonDto);
-  }
-
   @Post('file')
   @UseInterceptors(
     AnyFilesInterceptor({
@@ -62,22 +56,9 @@ export class PersonController {
     return '接收到文件';
   }
 
-  @Get()
-  findAll() {
-    console.log(this.person);
-    console.log(this.personFromUseFactory);
-    return this.personService.findAll();
-  }
-
-  @Get('find')
-  find(@Query('name') name: string, @Query('age') age: number) {
-    // return this.personService.findByQuery({ name, age });
-    return this.personService2.findByQuery({ name, age });
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.personService.findOne(+id);
+  @Post()
+  create(@Body(ValidationPipe) createPersonDto: CreatePersonDto) {
+    return this.personService.create(createPersonDto);
   }
 
   @Patch(':id')
@@ -88,5 +69,17 @@ export class PersonController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.personService.remove(+id);
+  }
+
+  @Get()
+  findAll() {
+    console.log(this.person);
+    console.log(this.personFromUseFactory);
+    return this.personService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.personService.findOne(+id);
   }
 }
