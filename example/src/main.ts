@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { WINSTON_LOGGER_TOKEN } from './winston/winston.module';
 // import { TimeInterceptor } from './time.interceptor';
 // import { LoginGuard } from './login.guard';
 // import { NextFunction, Response, Request } from 'express';
@@ -21,6 +22,8 @@ async function bootstrap() {
   // app.useGlobalGuards(new LoginGuard());
   // 全局拦截器
   // app.useGlobalInterceptors(new TimeInterceptor());
+  // 引入自定义日志
+  app.useLogger(app.get(WINSTON_LOGGER_TOKEN));
 
   await app.listen(process.env.PORT ?? 3000);
 }

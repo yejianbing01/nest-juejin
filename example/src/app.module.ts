@@ -9,6 +9,9 @@ import { LoginGuard } from './component/guard/login.guard';
 import { TimeInterceptor } from './component/interceptor/time.interceptor';
 import { ConfcModuleFromDefinition } from './confc/confc.module';
 import { TestFilter } from './component/filter/test.filter';
+import { WinstonModule } from './winston/winston.module';
+import * as chalk from 'chalk';
+import { transports, format } from 'winston';
 
 @Module({
   imports: [
@@ -17,6 +20,27 @@ import { TestFilter } from './component/filter/test.filter';
     // ConfcModule.register({ userName: 'confc' }),
     ConfcModuleFromDefinition.register({
       userName: 'ConfcModuleFromDefinition',
+    }),
+    WinstonModule.forRoot({
+      level: 'debug',
+      transports: [
+        new transports.Console({
+          format: format.combine(
+            format.colorize(),
+            format.printf(({ context, level, message, time }) => {
+              const appStr = chalk.green(`[NEST]`);
+              const contextStr = chalk.yellow(`[${context}]`);
+
+              return `${appStr} ${time} ${level} ${contextStr} ${message} `;
+            }),
+          ),
+        }),
+        new transports.File({
+          format: format.combine(format.timestamp(), format.json()),
+          filename: '111.log',
+          dirname: 'log',
+        }),
+      ],
     }),
   ],
   controllers: [AppController],
