@@ -77,16 +77,21 @@
             const chunkList = [];
 
             for (let i = 0; i < chunkCount; i++) {
-                file.slice(i * chunkSize, (i + 1) * chunkSize)
-                chunkList.push(i)
+                chunkList.push(file.slice(i * chunkSize, (i + 1) * chunkSize))
             }
 
-            chunkList.map((item, index) => {
+            const name = Math.random().toString().slice(2, 8) + '_' + file.name
+            const promises = chunkList.map((item, index) => {
                 const data = new FormData();
-                data.set('name', file.name + '-' + index);
+                data.set('name', name + '-' + index);
                 data.set('file', item)
-                axios.post('http://localhost:3000/file', data, { headers: { 'content-type': 'multipart/form-data' } })
+                return axios.post('http://localhost:3000/chunkFile', data, { headers: { 'content-type': 'multipart/form-data' } })
             })
+            await Promise.all(promises);
+            const res = await axios.get(`http://localhost:3000/mergeFile?name=${name}`)
+            const imgElement = document.createElement('img');
+            imgElement.src = res.data
+            document.documentElement.appendChild(imgElement)
         }
 
         fileInput.onchange = () => formData()
