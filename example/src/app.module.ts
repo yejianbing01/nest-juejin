@@ -20,6 +20,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import config from '../config';
 import { createClient } from 'redis';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -75,6 +76,10 @@ import { createClient } from 'redis';
       extra: {
         authPlugin: 'sha256_password',
       },
+    }),
+    JwtModule.register({
+      secret: 'nest-test',
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AppController],

@@ -3,7 +3,9 @@ import {
   Get,
   Inject,
   Query,
+  Res,
   Session,
+  UnauthorizedException,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -20,6 +22,8 @@ import { WINSTON_LOGGER_TOKEN } from './winston/winston.module';
 import { MyLogger } from './winston/MyLogger';
 import { ConfigService } from '@nestjs/config';
 import { RedisClientType } from 'redis';
+import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
 
 @UseGuards(LoginGuard) // 开启守卫
 @UseInterceptors(TimeInterceptor) // 开启拦截器
@@ -37,6 +41,9 @@ export class AppController {
 
   @Inject(WINSTON_LOGGER_TOKEN)
   private logger: MyLogger;
+
+  @Inject(JwtService)
+  private jwtService: JwtService;
 
   @Get('config')
   getConfig() {
@@ -73,5 +80,32 @@ export class AppController {
   session(@Session() session) {
     session.count = session.count ? session.count + 1 : 1;
     return session.count;
+  }
+
+  @Get('jwt')
+  jwt(
+    @Res({ passthrough: true }) response: Response,
+    @MyHeaders('Authorization') authorization: string,
+  ) {
+    console.log({ authorization });
+    if (authorization) {
+      try {
+        const token = authorization.split(' ')[1];
+        const data = this.jwtService.verify(token);
+
+        const newToken = this.jwtService.sign({
+          count: data.count + 1,
+        });
+        response.setHeader('token', newToken);
+        return data.count + 1;
+      } catch (e) {
+        console.log(e);
+        throw new UnauthorizedException();
+      }
+    } else {
+      const newToken = this.jwtService.sign({ count: 1 });
+      response.setHeader('token', newToken);
+      return 'ok';
+    }
   }
 }
