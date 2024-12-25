@@ -18,6 +18,7 @@ import { Ccc, MyHeaders } from './component/decorator/ccc.decorator';
 import { WINSTON_LOGGER_TOKEN } from './winston/winston.module';
 import { MyLogger } from './winston/MyLogger';
 import { ConfigService } from '@nestjs/config';
+import { RedisClientType } from 'redis';
 
 @UseGuards(LoginGuard) // 开启守卫
 @UseInterceptors(TimeInterceptor) // 开启拦截器
@@ -29,6 +30,9 @@ export class AppController {
 
   @Inject(ConfigService)
   private configService: ConfigService;
+
+  @Inject('REDIS_CLIENT')
+  private redisClient: RedisClientType;
 
   @Inject(WINSTON_LOGGER_TOKEN)
   private logger: MyLogger;
@@ -42,6 +46,12 @@ export class AppController {
       c: this.configService.get('c'),
       db: this.configService.get('db'),
     };
+  }
+
+  @Get('redis')
+  async getRedis() {
+    await this.redisClient.set('test', '123');
+    return this.redisClient.keys('*');
   }
 
   @Get()

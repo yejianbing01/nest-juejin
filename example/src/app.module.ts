@@ -19,6 +19,7 @@ import { City } from './city/entities/city.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import config from '../config';
+import { createClient } from 'redis';
 
 @Module({
   imports: [
@@ -91,6 +92,19 @@ import config from '../config';
     {
       provide: APP_FILTER,
       useClass: TestFilter,
+    },
+    {
+      provide: 'REDIS_CLIENT',
+      useFactory: async () => {
+        const client = createClient({
+          socket: {
+            host: '127.0.0.1',
+            port: 6379,
+          },
+        });
+        await client.connect();
+        return client;
+      },
     },
   ],
 })
