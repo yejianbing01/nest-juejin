@@ -3,6 +3,7 @@ import {
   Get,
   Inject,
   Query,
+  Session,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -66,5 +67,11 @@ export class AppController {
   @Get('validate')
   validate(@Query('num', ValidatePipe) num: number) {
     return num;
+  }
+
+  @Get('session')
+  session(@Session() session) {
+    session.count = session.count ? session.count + 1 : 1;
+    return session.count;
   }
 }
