@@ -13,12 +13,30 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  BadRequestException,
+  HttpException,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { storage } from 'src/component/storage';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Person } from './entities/person.entity';
+import { Repository } from 'typeorm';
+import * as crypto from 'crypto';
+import { LoginPersonDto } from './dto/login-person.dto';
+import { JwtService } from '@nestjs/jwt';
+import { Response } from 'express';
+import { LoginGuard } from 'src/component/guard/login.guard';
+
+function md5(str) {
+  const hash = crypto.createHash('md5');
+  hash.update(str);
+  return hash.digest('hex');
+}
 
 @Controller('person')
 export class PersonController {
@@ -32,6 +50,12 @@ export class PersonController {
   private readonly person: { name: string; age: number };
   @Inject('person_factory')
   private readonly personFromUseFactory: { name: string; age: number };
+
+  @InjectRepository(Person)
+  private personRepository: Repository<Person>;
+
+  @Inject(JwtService)
+  private jwtService: JwtService;
 
   @Post('file')
   @UseInterceptors(
@@ -71,6 +95,7 @@ export class PersonController {
     return this.personService.remove(+id);
   }
 
+  @UseGuards(LoginGuard)
   @Get()
   findAll() {
     console.log(this.person);
@@ -81,5 +106,49 @@ export class PersonController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.personService.findOne(+id);
+  }
+
+  @Post('register')
+  async register(@Body() createPersonDto: CreatePersonDto) {
+    const foundPerson = await this.personRepository.findOneBy({
+      username: createPersonDto.username,
+    });
+    if (foundPerson) {
+      throw new HttpException('用户名已存在', 200);
+    }
+
+    const user = new Person();
+    user.username = createPersonDto.username;
+    user.password = md5(createPersonDto.password);
+    try {
+      await this.personRepository.save(user);
+      return '注册成功';
+    } catch (e) {
+      console.log(e);
+      throw '注册失败';
+    }
+  }
+
+  @Post('login')
+  async login(
+    @Body() loginPersonDto: LoginPersonDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const foundPerson = await this.personRepository.findOneBy({
+      username: loginPersonDto.username,
+    });
+    if (!foundPerson) {
+      throw new HttpException('用户名不存在', 200);
+    }
+    if (foundPerson.password !== md5(loginPersonDto.password)) {
+      throw new HttpException('密码错误', 200);
+    }
+
+    const token = this.jwtService.sign({
+      id: foundPerson.id,
+      username: foundPerson.username,
+    });
+    res.setHeader('token', token);
+    return 'login success';
   }
 }

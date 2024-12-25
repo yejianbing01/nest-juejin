@@ -2,9 +2,19 @@ import { forwardRef, Module } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { PersonController } from './person.controller';
 import { BookModule } from 'src/book/book.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Person } from './entities/person.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [forwardRef(() => BookModule)],
+  imports: [
+    forwardRef(() => BookModule),
+    TypeOrmModule.forFeature([Person]),
+    JwtModule.register({
+      secret: 'nest-test',
+      signOptions: { expiresIn: '1d' },
+    }),
+  ],
   controllers: [PersonController],
   providers: [
     // 1. useClass简写

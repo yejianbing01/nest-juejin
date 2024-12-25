@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { WINSTON_LOGGER_TOKEN } from './winston/winston.module';
 import * as session from 'express-session';
+import { ValidationPipe } from '@nestjs/common';
 // import { TimeInterceptor } from './time.interceptor';
 // import { LoginGuard } from './login.guard';
 // import { NextFunction, Response, Request } from 'express';
@@ -23,6 +24,8 @@ async function bootstrap() {
   // app.useGlobalGuards(new LoginGuard());
   // 全局拦截器
   // app.useGlobalInterceptors(new TimeInterceptor());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
   // 引入自定义日志
   app.useLogger(app.get(WINSTON_LOGGER_TOKEN));
 

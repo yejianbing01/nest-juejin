@@ -1,6 +1,7 @@
-import { IsInt, Length } from 'class-validator';
+import { IsNotEmpty, Length } from 'class-validator';
 
-export class CreatePersonDto {
+export class LoginPersonDto {
+  @IsNotEmpty()
   @Length(5, 10, {
     message: '用户名长度必须在5到10之间',
     // message({ targetName, property, value, constraints }) {
@@ -9,6 +10,7 @@ export class CreatePersonDto {
   })
   username: string;
 
+  @IsNotEmpty()
   @Length(5, 10, {
     message: '密码长度必须在5到10之间',
     // message({ targetName, property, value, constraints }) {
