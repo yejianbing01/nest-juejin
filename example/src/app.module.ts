@@ -16,11 +16,24 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Person } from './person/entities/person.entity';
 import { CityModule } from './city/city.module';
 import { City } from './city/entities/city.entity';
+import { ConfigModule } from '@nestjs/config';
+import * as path from 'path';
+import config from '../config';
 
 @Module({
   imports: [
     PersonModule,
     BookModule,
+    CityModule,
+    ConfigModule.forRoot({
+      // 前面的配置覆盖后面的配置
+      envFilePath: [
+        path.join(process.cwd(), '.env'),
+        path.join(process.cwd(), '.env.prod'),
+      ],
+      // 使用ts文件加载配置
+      load: [config],
+    }),
     // ConfcModule.register({ userName: 'confc' }),
     ConfcModuleFromDefinition.register({
       userName: 'ConfcModuleFromDefinition',
@@ -62,7 +75,6 @@ import { City } from './city/entities/city.entity';
         authPlugin: 'sha256_password',
       },
     }),
-    CityModule,
   ],
   controllers: [AppController],
   providers: [

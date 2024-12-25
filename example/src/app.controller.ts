@@ -17,6 +17,7 @@ import { TestFilter } from './component/filter/test.filter';
 import { Ccc, MyHeaders } from './component/decorator/ccc.decorator';
 import { WINSTON_LOGGER_TOKEN } from './winston/winston.module';
 import { MyLogger } from './winston/MyLogger';
+import { ConfigService } from '@nestjs/config';
 
 @UseGuards(LoginGuard) // 开启守卫
 @UseInterceptors(TimeInterceptor) // 开启拦截器
@@ -26,8 +27,22 @@ import { MyLogger } from './winston/MyLogger';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @Inject(ConfigService)
+  private configService: ConfigService;
+
   @Inject(WINSTON_LOGGER_TOKEN)
   private logger: MyLogger;
+
+  @Get('config')
+  getConfig() {
+    console.log('config', this.configService.get('a'));
+    return {
+      a: this.configService.get('a'),
+      b: this.configService.get('b'),
+      c: this.configService.get('c'),
+      db: this.configService.get('db'),
+    };
+  }
 
   @Get()
   // @UseGuards(AaaGuard)

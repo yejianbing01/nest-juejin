@@ -42,10 +42,11 @@ export class CityController {
     // }
     // await this.entityMange.save(City, cityChild);
 
-    //  查询的是所有节点
+    //  1. 查询的是所有节点
     // return this.entityMange.getTreeRepository(City).findTrees();
-    //  查询的是所有根节点
+    //  2. 查询的是所有根节点
     // return this.entityMange.getTreeRepository(City).findRoots();
+    // 3. findDescendantsTree 是查询某个节点的所有后代节点
     const parent = await this.entityMange.findOne(City, {
       where: {
         name: '华南',
