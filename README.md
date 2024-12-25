@@ -160,3 +160,17 @@ CMD ["node", "/app/main.js"]
 ```sh
 docker build -t book:0.1.0 .
 ```
+
+1. 配置读取
+```sh
+# 安装依赖
+npm install --save @nestjs/config
+```
+
+1. session 和 JWT
+````sh
+# session
+npm install express-session @types/express-session
+# jwt
+npm install @nestjs/jwt
+```
