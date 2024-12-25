@@ -14,6 +14,8 @@ import * as chalk from 'chalk';
 import { transports, format } from 'winston';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Person } from './person/entities/person.entity';
+import { CityModule } from './city/city.module';
+import { City } from './city/entities/city.entity';
 
 @Module({
   imports: [
@@ -53,13 +55,14 @@ import { Person } from './person/entities/person.entity';
       database: 'typeorm_test',
       synchronize: true,
       logging: true,
-      entities: [Person],
+      entities: [Person, City],
       poolSize: 10,
       connectorPackage: 'mysql2',
       extra: {
         authPlugin: 'sha256_password',
       },
     }),
+    CityModule,
   ],
   controllers: [AppController],
   providers: [
