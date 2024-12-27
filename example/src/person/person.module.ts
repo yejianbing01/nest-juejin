@@ -14,7 +14,7 @@ import { Permission } from './entities/Permission.entity';
     TypeOrmModule.forFeature([Person, Role, Permission]),
     JwtModule.register({
       secret: 'nest-test',
-      signOptions: { expiresIn: '1d' },
+      signOptions: { expiresIn: '30m' },
     }),
   ],
   controllers: [PersonController],

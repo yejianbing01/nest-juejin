@@ -24,17 +24,21 @@ export class PermissionGuard implements CanActivate {
     if (!requirePermissions) {
       return true;
     }
+    try {
+      const roles = await this.personService.findRolesByIds(request.user.roles.map((role) => role.id));
+      const permissions = roles.reduce((total: Permission[], role) => total.concat(...role.permissions), []);
+      console.log('permissions', permissions);
 
-    const roles = await this.personService.findRolesByIds(request.user.roles.map((role) => role.id));
-    const permissions = roles.reduce((total: Permission[], role) => total.concat(...role.permissions), []);
-    console.log('permissions', permissions);
+      const hasPermission = permissions.some((permission) => requirePermissions.some((name) => name == permission.name));
+      console.log('hasPermission', hasPermission);
+      if (!hasPermission) {
+        throw new ForbiddenException('您没有访问该接口的权限');
+      }
 
-    const hasPermission = permissions.some((permission) => requirePermissions.some((name) => name == permission.name));
-    console.log('hasPermission', hasPermission);
-    if (!hasPermission) {
+      return true;
+    } catch (e) {
+      console.log(e);
       throw new ForbiddenException('您没有访问该接口的权限');
     }
-
-    return true;
   }
 }

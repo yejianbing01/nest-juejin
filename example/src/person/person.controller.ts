@@ -15,6 +15,8 @@ import {
   FileTypeValidator,
   HttpException,
   Res,
+  Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PersonService } from './person.service';
 import { CreatePersonDto } from './dto/create-person.dto';
@@ -29,6 +31,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { md5 } from 'src/component/utils';
 import { RequireLogin, RequirePermission } from 'src/component/decorator/custom.decorator';
+import { IsNotEmpty, Validate, ValidateIf } from 'class-validator';
 
 @Controller('person')
 export class PersonController {
@@ -126,7 +129,7 @@ export class PersonController {
   }
 
   @Post('login')
-  async login(@Body() loginPersonDto: LoginPersonDto, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() loginPersonDto: LoginPersonDto) {
     const foundPerson = await this.personRepository.findOne({
       where: { username: loginPersonDto.username },
       relations: { roles: true },
@@ -139,12 +142,43 @@ export class PersonController {
       throw new HttpException('密码错误', 200);
     }
 
-    const token = this.jwtService.sign({
-      id: foundPerson.id,
-      username: foundPerson.username,
-      roles: foundPerson.roles,
-    });
-    res.setHeader('token', token);
-    return { token };
+    const access_token = this.jwtService.sign(
+      {
+        id: foundPerson.id,
+        username: foundPerson.username,
+        roles: foundPerson.roles,
+      },
+      {
+        expiresIn: '30m',
+      },
+    );
+
+    const refresh_token = this.jwtService.sign(
+      {
+        id: foundPerson.id,
+      },
+      {
+        expiresIn: '7d',
+      },
+    );
+    return { access_token, refresh_token };
+  }
+
+  @Get('refresh')
+  async refresh(@Query('refresh_token') refreshToken: string) {
+    try {
+      const data: { id: number } = this.jwtService.verify(refreshToken);
+
+      const user = await this.personService.findOne(data.id);
+
+      const access_token = this.jwtService.sign({ id: user.id, username: user.username, roles: user.roles }, { expiresIn: '30m' });
+
+      const refresh_token = this.jwtService.sign({ id: user.id }, { expiresIn: '7d' });
+
+      return { access_token, refresh_token };
+    } catch (e) {
+      console.log(e);
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
   }
 }
