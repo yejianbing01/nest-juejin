@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { BookService } from 'src/book/book.service';
-import { EntityManager, In } from 'typeorm';
+import { EntityManager, FindOptionsWhere, In } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { Person } from './entities/person.entity';
 import { Role } from './entities/Role.entity';
@@ -38,6 +38,10 @@ export class PersonService {
 
   findOne(id: number) {
     return this.entityManager.findOne(Person, { where: { id } });
+  }
+
+  findOneBy(where: FindOptionsWhere<Person>) {
+    return this.entityManager.findOne(Person, { where });
   }
 
   async findRolesByIds(roleIds: number[]) {

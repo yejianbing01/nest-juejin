@@ -24,9 +24,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { Role } from './person/entities/Role.entity';
 import { Permission } from './person/entities/Permission.entity';
 import { PermissionGuard } from './component/guard/permission.guard';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     PersonModule,
     BookModule,
     CityModule,
