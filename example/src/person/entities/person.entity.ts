@@ -1,14 +1,7 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Role } from './Role.entity';
 
-@Entity({
-  name: 'aaa_user',
-})
+@Entity()
 export class Person {
   @PrimaryGeneratedColumn()
   id: number;
@@ -34,4 +27,10 @@ export class Person {
     comment: '更新时间',
   })
   updateTime: Date;
+
+  @ManyToMany(() => Role)
+  @JoinTable({
+    name: 'person_role_relation',
+  })
+  roles: Role[];
 }

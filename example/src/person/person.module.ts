@@ -5,11 +5,13 @@ import { BookModule } from 'src/book/book.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Person } from './entities/person.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { Role } from './entities/Role.entity';
+import { Permission } from './entities/Permission.entity';
 
 @Module({
   imports: [
     forwardRef(() => BookModule),
-    TypeOrmModule.forFeature([Person]),
+    TypeOrmModule.forFeature([Person, Role, Permission]),
     JwtModule.register({
       secret: 'nest-test',
       signOptions: { expiresIn: '1d' },

@@ -6,6 +6,6 @@ export class LogMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     console.log('before', req.url);
     next();
-    console.log('after', res);
+    // console.log('after', res);
   }
 }

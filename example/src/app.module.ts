@@ -21,6 +21,9 @@ import * as path from 'path';
 import config from '../config';
 import { createClient } from 'redis';
 import { JwtModule } from '@nestjs/jwt';
+import { Role } from './person/entities/Role.entity';
+import { Permission } from './person/entities/Permission.entity';
+import { PermissionGuard } from './component/guard/permission.guard';
 
 @Module({
   imports: [
@@ -29,10 +32,7 @@ import { JwtModule } from '@nestjs/jwt';
     CityModule,
     ConfigModule.forRoot({
       // 前面的配置覆盖后面的配置
-      envFilePath: [
-        path.join(process.cwd(), '.env'),
-        path.join(process.cwd(), '.env.prod'),
-      ],
+      envFilePath: [path.join(process.cwd(), '.env'), path.join(process.cwd(), '.env.prod')],
       // 使用ts文件加载配置
       load: [config],
     }),
@@ -70,7 +70,7 @@ import { JwtModule } from '@nestjs/jwt';
       database: 'typeorm_test',
       synchronize: true,
       logging: true,
-      entities: [Person, City],
+      entities: [Person, City, Role, Permission],
       poolSize: 10,
       connectorPackage: 'mysql2',
       extra: {
@@ -86,18 +86,10 @@ import { JwtModule } from '@nestjs/jwt';
   providers: [
     AppService,
     // 开启全局守卫
-    {
-      provide: APP_GUARD,
-      useClass: LoginGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: TimeInterceptor,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: TestFilter,
-    },
+    { provide: APP_GUARD, useClass: LoginGuard },
+    { provide: APP_GUARD, useClass: PermissionGuard },
+    { provide: APP_INTERCEPTOR, useClass: TimeInterceptor },
+    { provide: APP_FILTER, useClass: TestFilter },
     {
       provide: 'REDIS_CLIENT',
       useFactory: async () => {
