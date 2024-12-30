@@ -7,6 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 // import { TimeInterceptor } from './time.interceptor';
 // import { LoginGuard } from './login.guard';
 // import { NextFunction, Response, Request } from 'express';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -28,7 +29,7 @@ async function bootstrap() {
 
   // 引入自定义日志
   app.useLogger(app.get(WINSTON_LOGGER_TOKEN));
-
+  app.use(cookieParser());
   // app.use(
   //   session({
   //     secret: 'nest-test',

@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Inject,
-  Query,
-  Res,
-  Session,
-  UnauthorizedException,
-  UseFilters,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, Inject, Query, Req, Res, Session, UnauthorizedException, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { LoginGuard } from './component/guard/login.guard';
 import { TimeInterceptor } from './component/interceptor/time.interceptor';
@@ -23,7 +12,8 @@ import { MyLogger } from './winston/MyLogger';
 import { ConfigService } from '@nestjs/config';
 import { RedisClientType } from 'redis';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { SessionService } from './session/session.service';
 
 @UseGuards(LoginGuard) // 开启守卫
 @UseInterceptors(TimeInterceptor) // 开启拦截器
@@ -36,14 +26,28 @@ export class AppController {
   @Inject(ConfigService)
   private configService: ConfigService;
 
-  @Inject('REDIS_CLIENT')
-  private redisClient: RedisClientType;
-
   @Inject(WINSTON_LOGGER_TOKEN)
   private logger: MyLogger;
 
   @Inject(JwtService)
   private jwtService: JwtService;
+
+  @Inject(SessionService)
+  private sessionService: SessionService;
+
+  @Get('count123')
+  async count(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const sid = req.cookies?.sid;
+    console.log('sid', sid);
+    const session = await this.sessionService.getSession<{ count: string }>(sid);
+    console.log(session);
+    const curCount = session.count ? parseInt(session.count) + 1 : 1;
+    const curSid = await this.sessionService.setSession(sid, {
+      count: curCount,
+    });
+    res.cookie('sid', curSid, { maxAge: 1800000 });
+    return curCount;
+  }
 
   @Get('config')
   getConfig() {
@@ -54,12 +58,6 @@ export class AppController {
       c: this.configService.get('c'),
       db: this.configService.get('db'),
     };
-  }
-
-  @Get('redis')
-  async getRedis() {
-    await this.redisClient.set('test', '123');
-    return this.redisClient.keys('*');
   }
 
   @Get()
@@ -83,10 +81,7 @@ export class AppController {
   }
 
   @Get('jwt')
-  jwt(
-    @Res({ passthrough: true }) response: Response,
-    @MyHeaders('Authorization') authorization: string,
-  ) {
+  jwt(@Res({ passthrough: true }) response: Response, @MyHeaders('Authorization') authorization: string) {
     console.log({ authorization });
     if (authorization) {
       try {

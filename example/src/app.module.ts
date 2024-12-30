@@ -19,12 +19,13 @@ import { City } from './city/entities/city.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'path';
 import config from '../config';
-import { createClient } from 'redis';
 import { JwtModule } from '@nestjs/jwt';
 import { Role } from './person/entities/Role.entity';
 import { Permission } from './person/entities/Permission.entity';
 import { PermissionGuard } from './component/guard/permission.guard';
 import { AuthModule } from './auth/auth.module';
+import { RedisModule } from './redis/redis.module';
+import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
@@ -83,6 +84,8 @@ import { AuthModule } from './auth/auth.module';
       secret: 'nest-test',
       signOptions: { expiresIn: '1d' },
     }),
+    RedisModule,
+    SessionModule,
   ],
   controllers: [AppController],
   providers: [
@@ -92,19 +95,6 @@ import { AuthModule } from './auth/auth.module';
     { provide: APP_GUARD, useClass: PermissionGuard },
     { provide: APP_INTERCEPTOR, useClass: TimeInterceptor },
     { provide: APP_FILTER, useClass: TestFilter },
-    {
-      provide: 'REDIS_CLIENT',
-      useFactory: async () => {
-        const client = createClient({
-          socket: {
-            host: '127.0.0.1',
-            port: 6379,
-          },
-        });
-        await client.connect();
-        return client;
-      },
-    },
   ],
 })
 export class AppModule implements NestModule {
